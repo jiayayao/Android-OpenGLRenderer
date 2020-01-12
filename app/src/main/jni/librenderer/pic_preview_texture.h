@@ -21,6 +21,7 @@ public:
 	bool createTexture();
 	void updateTexImage(byte* pixels, int width, int height);
 	bool bindTexture(GLint uniformSampler);
+	bool bindTexture2(GLint uniformSampler);
 	void dealloc();
 };
 

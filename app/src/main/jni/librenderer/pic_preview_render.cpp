@@ -59,6 +59,15 @@ void PicPreviewRender::render(){
 	glEnableVertexAttribArray(ATTRIBUTE_TEXCOORD);
 	picPreviewTexture->bindTexture(uniformSampler);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	static const GLfloat _vertices2[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f };
+	glVertexAttribPointer(ATTRIBUTE_VERTEX, 2, GL_FLOAT, 0, 0, _vertices2);
+	glEnableVertexAttribArray(ATTRIBUTE_VERTEX);
+	static const GLfloat texCoords2[] = { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+	glVertexAttribPointer(ATTRIBUTE_TEXCOORD, 2, GL_FLOAT, 0, 0, texCoords2);
+	glEnableVertexAttribArray(ATTRIBUTE_TEXCOORD);
+	picPreviewTexture->bindTexture2(uniformSampler);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
 void PicPreviewRender::dealloc() {
@@ -92,7 +101,7 @@ int PicPreviewRender::useProgram() {
 		return -1;
 	}
 	glUseProgram(program);
-
+    // 从program中获取yuvTexSampler的location
 	uniformSampler = glGetUniformLocation(program, "yuvTexSampler");
 
 	return 1;

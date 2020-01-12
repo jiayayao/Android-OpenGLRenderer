@@ -38,6 +38,18 @@ bool PicPreviewTexture::bindTexture(GLint uniformSampler) {
 	if (checkGlError("glBindTexture")) {
 		return false;
 	}
+	// 设置sampler采样器的位置值，或者说纹理单元GL_TEXTURE0
+	glUniform1i(uniformSampler, 0);
+	return true;
+}
+
+bool PicPreviewTexture::bindTexture2(GLint uniformSampler) {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	if (checkGlError("glBindTexture")) {
+		return false;
+	}
+	// 设置sampler采样器的位置值，或者说纹理单元GL_TEXTURE0
 	glUniform1i(uniformSampler, 0);
 	return true;
 }
