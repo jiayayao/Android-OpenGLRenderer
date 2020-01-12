@@ -15,7 +15,7 @@ public class PngPreviewActivity extends Activity {
 	private SurfaceView surfaceView;
 	private RelativeLayout preview_parent_layout;
 
-	private String picPath = "/mnt/sdcard/1.png";
+	private String picPath = "/sdcard/1.png";
 	
 	private PngPreviewController pngPreviewController;
 	private Callback previewCallback = new Callback() {

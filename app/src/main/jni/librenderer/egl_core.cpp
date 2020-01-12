@@ -94,23 +94,24 @@ bool EGLCore::init(EGLContext sharedContext) {
 	EGLint height;
 
 	const EGLint attribs[] = { EGL_BUFFER_SIZE, 32, EGL_ALPHA_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-	EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_NONE };
-
+							   EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_NONE };
+	//eglGetDisplay来返回OpenGL ES渲染的目标，每个厂商都会返回默认的显示设备
 	if ((display = eglGetDisplay(EGL_DEFAULT_DISPLAY)) == EGL_NO_DISPLAY) {
 		LOGE("eglGetDisplay() returned error %d", eglGetError());
 		return false;
 	}
+	// 初始化显示设备
 	if (!eglInitialize(display, 0, 0)) {
 		LOGE("eglInitialize() returned error %d", eglGetError());
 		return false;
 	}
-
+	// 得到配置选项信息
 	if (!eglChooseConfig(display, attribs, &config, 1, &numConfigs)) {
 		LOGE("eglChooseConfig() returned error %d", eglGetError());
 		release();
 		return false;
 	}
-
+	// 创建OpenGL的上下文环境EGLContext
 	EGLint eglContextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 	if (!(context = eglCreateContext(display, config, NULL == sharedContext ? EGL_NO_CONTEXT : sharedContext, eglContextAttributes))) {
 		LOGE("eglCreateContext() returned error %d", eglGetError());
