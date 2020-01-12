@@ -27,6 +27,7 @@ void PicPreviewTexture::updateTexImage(byte* pixels, int frameWidth, int frameHe
 		if (checkGlError("glBindTexture")) {
 			return;
 		}
+		// 将pixels中的RGBA数据上传至显卡texture代表的纹理对象中
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	}
 }
@@ -44,8 +45,10 @@ bool PicPreviewTexture::bindTexture(GLint uniformSampler) {
 int PicPreviewTexture::initTexture() {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
+	// 设置纹理过滤方式，GL_LINEAR为线性过滤，有插值效果
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// 设置ST纹理坐标的环绕方式，GL_CLAMP_TO_EDGE为约束纹理坐标0~1之间，超出部分为边缘拉伸效果
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	return 1;
@@ -63,6 +66,7 @@ bool PicPreviewTexture::checkGlError(const char* op) {
 void PicPreviewTexture::dealloc() {
 	LOGI("enter PicPreviewTexture::dealloc");
 	if (texture) {
+		// 删除纹理对象，如果不删除，会造成显存泄漏
 		glDeleteTextures(1, &texture);
 	}
 }
