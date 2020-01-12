@@ -9,7 +9,8 @@
  */
 class PicPreviewTexture {
 private:
-	GLuint texture;
+    GLuint texture;
+    GLuint texture2;
 
 	int initTexture();
 

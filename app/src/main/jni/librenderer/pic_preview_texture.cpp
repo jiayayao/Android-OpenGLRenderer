@@ -11,6 +11,7 @@ PicPreviewTexture::~PicPreviewTexture() {
 bool PicPreviewTexture::createTexture() {
 	LOGI("enter PicPreviewTexture::createTexture");
 	texture = 0;
+	texture2 = 0;
 	int ret = initTexture();
 	if (ret < 0) {
 		LOGI("init texture failed...");
@@ -29,6 +30,15 @@ void PicPreviewTexture::updateTexImage(byte* pixels, int frameWidth, int frameHe
 		}
 		// 将pixels中的RGBA数据上传至显卡texture代表的纹理对象中
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		if (checkGlError("glBindTexture")) {
+			return;
+		}
+		// 将pixels中的RGBA数据上传至显卡texture2代表的纹理对象中
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	}
 }
 
@@ -45,7 +55,7 @@ bool PicPreviewTexture::bindTexture(GLint uniformSampler) {
 
 bool PicPreviewTexture::bindTexture2(GLint uniformSampler) {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture2);
 	if (checkGlError("glBindTexture")) {
 		return false;
 	}
@@ -63,6 +73,18 @@ int PicPreviewTexture::initTexture() {
 	// 设置ST纹理坐标的环绕方式，GL_CLAMP_TO_EDGE为约束纹理坐标0~1之间，超出部分为边缘拉伸效果
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+    // add another texture
+    glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// 设置纹理过滤方式，GL_LINEAR为线性过滤，有插值效果
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// 设置ST纹理坐标的环绕方式，GL_CLAMP_TO_EDGE为约束纹理坐标0~1之间，超出部分为边缘拉伸效果
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	return 1;
 }
 
@@ -80,5 +102,6 @@ void PicPreviewTexture::dealloc() {
 	if (texture) {
 		// 删除纹理对象，如果不删除，会造成显存泄漏
 		glDeleteTextures(1, &texture);
+		glDeleteTextures(1, &texture2);
 	}
 }
